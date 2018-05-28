@@ -54,42 +54,70 @@ def check_date(date_string) :
 		val = parse(date_string)
 	except ValueError:
 		print('Invalid date format\n')
-		print('Quitting...\n')
-		raise SystemExit
+		#print('Quitting...\n')
+		#raise SystemExit
 	return val
 	
-#does not factor in difference in time, due to requirement (convert result of (1,2,3) into seconds)	
+# does not factor in time differences, due to requirement (convert result of (1,2,3) into seconds, not 
+# the original datetime parameters)	
 def days_in_secs(days) :
 	return days*24*60*60
 def days_in_mins(days) :
 	return days*24*60
 def days_in_hrs(days) :
-	return days*24
+	return days*24	
 def days_in_yrs(days) :
-	return days/365
+	return round(days/365, 2) #rounding?
 	
-start = input('Enter a starting datetime\n')
-parse_start = check_date(start)
+while True :	
+	try :	
+		start = input('Enter a starting datetime:\n')
+		parse_start = parse(start)
+		end = input('Enter an end datetime:\n')
+		parse_end = parse(end)		
+		break
+	except ValueError:
+		print('Invalid date format\n')
 
-end = input('Enter an end datetime\n')
-parse_end = check_date(end)
+days = day_diff(parse_start, parse_end)
+weekdays = weekday_diff(parse_start, parse_end)
+weeks = week_diff(parse_start, parse_end)
 
+#format inputted datetimes for output
+fstart = parse_start.strftime("%Y-%m-%d %H:%M:%S")
+fend = parse_end.strftime("%Y-%m-%d %H:%M:%S")
 
-select = input('Select a date difference to be calculated.\n [D]ays, [W]eekdays, [C]omplete weeks, [Q]uit\n')
-case = selection(select)
-#while True :
-if case == 'D' :
-	val = str(day_diff(parse_start, parse_end))
-	print(val + ' days')
-elif case == 'W' :
-	val = str(weekday_diff(parse_start, parse_end))
-elif case == 'C' :
-	val = str(week_diff(parse_start, parse_end))
-elif case == 'Q' :
-	print('Quitting...\n')
-	#break
-	raise SystemExit
-else :
-	print('Please enter a selection\n')
-		
-#display results
+#print out all calculations as originally specified
+print('There are ' + str(days) + ' days between ' + fstart + ' and ' + fend)
+print('There are ' + str(weekdays) + ' weekdays between ' + fstart + ' and ' + fend)
+print('There are ' + str(weeks) + ' complete weeks between ' + fstart + ' and ' + fend)
+
+#prompt for optional conversion of result into different formats
+while True :
+	option = input('View results in different unit?\n[Y]es [N]o\n')
+	if option in ['Y', 'y'] :
+		unit = input('Select a unit to display results\n [S]econds, [M]inutes, [H]hours, [Y]ears, [Q]uit\n')
+		if unit in ('S', 's') :
+			print('There are ' + str(days_in_secs(days)) + ' days between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_secs(weekdays)) + ' weekdays between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_secs(weeks*7)) + ' complete weeks between ' + fstart + ' and ' + fend)
+		elif unit in ('M', 'm') :
+			print('There are ' + str(days_in_mins(days)) + ' days between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_mins(weekdays)) + ' weekdays between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_mins(weeks*7)) + ' complete weeks between ' + fstart + ' and ' + fend)		
+		elif unit in ('H', 'h') :
+			print('There are ' + str(days_in_hrs(days)) + ' days between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_hrs(weekdays)) + ' weekdays between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_hrs(weeks*7)) + ' complete weeks between ' + fstart + ' and ' + fend)				
+		elif unit in ('Y', 'y') :
+			print('There are ' + str(days_in_yrs(days)) + ' days between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_yrs(weekdays)) + ' weekdays between ' + fstart + ' and ' + fend)
+			print('There are ' + str(days_in_yrs(weeks*7)) + ' complete weeks between ' + fstart + ' and ' + fend)		
+		elif unit in ('Q', 'q') :
+			print('Exiting Date-Diff...\n')
+			raise SystemExit
+	elif option in ['N', 'n'] :
+		print('Exiting Date-Diff...\n')
+		raise SystemExit
+	else :
+		print('Invalid selection, please try again')
